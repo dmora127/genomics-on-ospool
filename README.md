@@ -265,17 +265,17 @@ The submit file will instruct the EP to run our executable `basecalling_step2_si
    
     You can track the progress of your jobs with the `condor_q` command
     
-    > [!NOTE] 
-    > You may experience some `held` jobs due to a variety of resource allocation overruns, including using more memory or CPUs than request. We recommend you use the following commands to edit those held jobs and resubmit them. 
-    >
-    > ```
-    > [user.name@ap40 user.name]$ condor_q <cluster.id> -hold
-    > 12345678.123      user.name       5/6  19:47 Excessive CPU usage. Job used 3 CPUs, while request_cpus=1. Please verify that the code is configured to use a limited number of cpus/threads, and matches request_cpus.
-    > [user.name@ap40 user.name]$ condor_qedit 12345678.123 requestCpus=4
-    > [user.name@ap40 user.name]$ condor_release 12345678.123
-    > Job 12345678.123 released
-    > [user.name@ap40 user.name]$ 
-    > ```
+> [!NOTE] 
+> You may experience some `held` jobs due to a variety of resource allocation overruns, including using more memory or CPUs than request. We recommend you use the following commands to edit those held jobs and resubmit them. 
+>
+> ```
+> [user.name@ap40 user.name]$ condor_q <cluster.id> -hold
+> 12345678.123      user.name       5/6  19:47 Excessive CPU usage. Job used 3 CPUs, while request_cpus=1. Please verify that the code is configured to use a limited number of cpus/threads, and matches request_cpus.
+> [user.name@ap40 user.name]$ condor_qedit 12345678.123 requestCpus=4
+> [user.name@ap40 user.name]$ condor_release 12345678.123
+> Job 12345678.123 released
+> [user.name@ap40 user.name]$ 
+> ```
 
 ---------
 
