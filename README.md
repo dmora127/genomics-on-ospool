@@ -265,7 +265,7 @@ The submit file will instruct the EP to run our executable `basecalling_step2_si
    
     You can track the progress of your jobs with the `condor_q` command
     
-    > [!TIP]
+    > [!NOTE]
     > You may experience some `held` jobs due to a variety of resource allocation overruns, including using more memory or CPUs than request. We recommend you use the following commands to edit those held jobs and resubmit them. 
     >
     > ```
