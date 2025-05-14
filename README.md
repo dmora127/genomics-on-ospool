@@ -274,7 +274,8 @@ The submit file will instruct the EP to run our executable `basecalling_step2_si
 > [user.name@ap40 user.name]$ condor_qedit 12345678.123 requestCpus=4
 > [user.name@ap40 user.name]$ condor_release 12345678.123
 > Job 12345678.123 released
-> [user.name@ap40 user.name]$ ```
+> [user.name@ap40 user.name]$ 
+> ```
 
 ---------
 
