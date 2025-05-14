@@ -120,6 +120,12 @@ text to a new file titled `dorado.def`. You can open up a text editor, such as `
     ```
    mv dorado.sif /ospool/ap40/data/<user.name>/
    ```
+   
+6. We need to repeat steps 3-5 for samtools. Since samtools has an existing container on Dockerhub, we can use it as the base image to build our container. 
+   
+    ```
+   apptainer build /ospool/ap40/data/<user.name>/samtools.sif docker://biocontainers/samtools:v1.9-4-deb_cv1
+   ```
 
 ### Data Wrangling and Splitting Reads
 
@@ -277,7 +283,54 @@ The submit file will instruct the EP to run our executable `basecalling_step2_si
 > [user.name@ap40 user.name]$ 
 > ```
 
+
+
+## Mapping Sequencing Reads to Genome
+
+### Data Wrangling and Splitting Reads
+
+To get ready for our mapping step, we need to prepare our freshly basecalled reads. You should have a directory with several BAM files, these BAM files need to be sorted and 
+
+1. Concatenate the basecalled reads
+    
+    
+
+2. 
+
+
 ---------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 1. Click on "File", then "New Project"
