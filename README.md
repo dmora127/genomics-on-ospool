@@ -19,6 +19,40 @@ Jump to...
 - [Getting Help](#getting-help)
 - [Appendix](#appendix-preparing-to-transition-an-r-project-from-your-computer-to-chtc)
 
+<!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
+
+- [Long-Read Genomics on the OSPool](#long-read-genomics-on-the-ospool)
+   * [Tutorial Setup](#tutorial-setup)
+      + [Assumptions](#assumptions)
+      + [Materials](#materials)
+   * [Basecalling Oxford Nanopore long reads using Dorado](#basecalling-oxford-nanopore-long-reads-using-dorado)
+      + [Setting up our software environment](#setting-up-our-software-environment)
+      + [Data Wrangling and Splitting Reads](#data-wrangling-and-splitting-reads)
+         - [For _Simplex_ basecalling](#for-simplex-basecalling)
+         - [For _Duplex_ basecalling](#for-duplex-basecalling)
+      + [Submitting your basecalling jobs](#submitting-your-basecalling-jobs)
+   * [Mapping Sequencing Reads to Genome](#mapping-sequencing-reads-to-genome)
+      + [Data Wrangling and Splitting Reads](#data-wrangling-and-splitting-reads-1)
+      + [Running Minimap to Map Reads to the Reference Genome](#running-minimap-to-map-reads-to-the-reference-genome)
+   * [Next Steps](#next-steps)
+      + [Software](#software)
+      + [Data](#data)
+      + [GPUs](#gpus)
+   * [Getting Help](#getting-help)
+   * [Appendix: Preparing to transition an R project from your computer to CHTC](#appendix-preparing-to-transition-an-r-project-from-your-computer-to-chtc)
+      + [Locate your R scripts](#locate-your-r-scripts)
+      + [Locate your other input files](#locate-your-other-input-files)
+      + [Check your R scripts for "absolute paths"](#check-your-r-scripts-for-absolute-paths)
+      + [Find your version of R](#find-your-version-of-r)
+         - [Console](#console)
+         - [Packages pane](#packages-pane)
+         - [Command](#command)
+      + [Identify your R packages](#identify-your-r-packages)
+      + [About paths](#about-paths)
+      + [About versions](#about-versions)
+
+<!-- TOC end -->
+
 ## Tutorial Setup
 
 ### Assumptions
