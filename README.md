@@ -96,7 +96,7 @@ Once you've built your container, you can delete the contents of this directory 
     export APPTAINER_CACHEDIR=$HOME/tmp
     ```
 > [!CAUTION]
-> These commands must be ran <ins>**every time you login and to build a new container**</ins>. Building Apptainer containers on the Access Point without first running the commands below places excessive strain on shared storage resources and <ins>**violates OSPool usage policies**</ins>. Failure to follow these steps may result in restricted access to the system.
+> These commands must be ran <ins>**every time you login and to build a new container**</ins>. Building Apptainer containers on the Access Point without first running the commands above places excessive strain on shared storage resources and <ins>**violates OSPool usage policies**</ins>. Failure to follow these steps may result in restricted access to the system.
 
 3. We now need to write up a definition file for singularity to build our Dorado container. Copy and paste this block of
 text to a new file titled `dorado.def`. You can open up a text editor, such as `vim` or `nano` using a command like: `vim dorado.def`.
