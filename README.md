@@ -324,8 +324,8 @@ To get ready for our mapping step, we need to prepare our freshly basecalled rea
        ```
       condor_submit minimap2_index.sub
       ```
-    > [!WARNING]  
-    > Index will take a few minutes to complete, **do not proceed until your indexing job is completed**
+> [!WARNING]  
+> Index will take a few minutes to complete, **do not proceed until your indexing job is completed**
 
 2. Writing our Minimap2 executable script - `minimap2.sh`
     
