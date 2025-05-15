@@ -218,6 +218,7 @@ When basecalling our sequencing data using simplex basecalling mode on Dorado we
 1. Create your Dorado simplex basecalling executable - `/home/<user.name>/genomics_tutorial/executables/basecalling_step2_simplex_reads.sh`
 
     ```
+    #!/bin/bash 
     # Run Dorado on the EP for each POD5 file (non-resumeable)
     #dorado ${dorado_arg_string} ${input_pod5_file} > ${output_bam_file}
     echo "Running dorado with: $1"
@@ -239,10 +240,10 @@ When basecalling our sequencing data using simplex basecalling mode on Dorado we
     executable		       = ../executables/basecalling_step2_simplex_reads.sh
     arguments		       = "'basecaller --batchsize 16 hac@v5.0.0 --models-directory ./models/ $(POD5_input_file) > $(POD5_input_file).bam'"
     
-    transfer_input_files   = osdf:///ospool/ap40/data/daniel.morales/split_by_channels/$(POD5_input_file), osdf:///ospool/ap40/data/daniel.morales/models.tar.gz
+    transfer_input_files   = osdf:///ospool/ap40/data/<user.name>/split_by_channels/$(POD5_input_file), osdf:///ospool/ap40/data/<user.name>/models.tar.gz
 
     transfer_output_files  = ./$(POD5_input_file).bam
-    output_destination	   = osdf:///ospool/ap40/data/daniel.morales/basecalledBAMs/
+    output_destination	   = osdf:///ospool/ap40/data/<user.name>/basecalledBAMs/
     
     output                 = ./basecalling_step2/logs/$(POD5_input_file)_$(Process)_basecalling_step2.out
     error                  = ./basecalling_step2/logs/$(POD5_input_file)_$(Process)_basecalling_step2.err
@@ -291,9 +292,47 @@ The submit file will instruct the EP to run our executable `basecalling_step2_si
 
 To get ready for our mapping step, we need to prepare our freshly basecalled reads. You should have a directory with several BAM files, these BAM files need to be sorted and 
 
-1. Concatenate the basecalled reads
+1. Indexing our reference genome - Generating `Celegans_ref.mmi`
+
+   1.  Create `minimap2_index.sh` using either `vim` or `nano`
+        ```
+       #!/bin/bash
+       minimap2 -x map-ont -d Celegans_ref.mmi Celegans_ref.fa
+       ```
+   2. Create `minimap2_index.sub` using either `vim` or `nano`
+        ```
+        +SingularityImage      = "osdf:///ospool/ap40/data/<user.name>/minimap2.sif"
     
+        executable		       = ../executables/minimap2_index.sh
+        
+        transfer_input_files   = osdf:///ospool/ap40/data/<user.name>/Celegans_ref.fa
     
+        transfer_output_files  = .Celegans_ref.mmi
+        output_destination	   = osdf:///ospool/ap40/data/<user.name>/
+        
+        output                 = ./minimap2/logs/$(Cluster)_$(Process)_indexing_step1.out
+        error                  = ./minimap2/logs/$(Cluster)_$(Process)_indexing_step1.err
+        log                    = ./minimap2/logs/$(Cluster)_$(Process)_indexing_step1.log
+        
+        request_cpus           = 4
+        request_disk           = 10 GB
+        request_memory         = 24 GB 
+        
+        queue 1
+       ```
+    3. Submit your `minimap2_index.sub` job to the OSPool
+        ```
+       condor_submit minimap2_index.sub
+       ```
+        > [!WARNING]  
+        > Index will take a few minutes to complete, **do not proceed until your indexing job is completed**
+
+2. Writing our Minimap2 executable script - `minimap2.sh`
+    
+    ```
+   #!/bin/bash
+   
+   ```
 
 2. 
 
