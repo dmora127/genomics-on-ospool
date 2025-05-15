@@ -169,6 +169,8 @@ This would mean that POD5 files that are generated from earlier in the sequencin
 files later in the run. Additionally, this division of data does not allow for _Duplex_ read basecalling. As a result prior
 to running Dorado, we must first reorganize the data contained within all the POD5 files. 
 
+---
+
 #### For _Simplex_ basecalling
 When basecalling our sequencing data using simplex basecalling mode on Dorado we can subdivide our POD5 files into smaller individual subsets. This subdivision of our files enables us to take advantage of the OSPool's High Throughput Computing (HTC) principles, significantly decreasing the time-to-results for our basecalling. We will use the `POD5` package installed in our `dorado.sif` container—if you need to generate the `dorado.sif` apptainer image, refer to [Setting up our software environment](#Setting-up-our-software-environment). 
 
