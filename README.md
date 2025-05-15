@@ -1,10 +1,13 @@
 # Long-Read Genomics on the OSPool
 
-This tutorial will walk you through a complete long-read sequencing analysis workflow using Oxford Nanopore data on the OSPool, the Open Science Pool high-throughput computing resource. You'll learn how to:
+This tutorial will walk you through a complete long-read sequencing analysis workflow using Oxford Nanopore data on the OSPool high-throughput computing ecosystem. You'll learn how to:
 
 * Basecall raw Nanopore reads using the latest GPU-accelerated Dorado basecaller
 * Map your reads to a reference genome using Minimap2
 * Call structural variants using Sniffles2
+* Breakdown massive bioinformatics workflows into many independent smaller tasks
+* Submit hundreds to thousands of jobs with a few simple commands
+* Use the Open Science Data Federation (OSDF) to manage file transfer during job submission
 
 All of these steps are distributed across hundreds (or thousands!) of jobs using the HTCondor workload manager and Apptainer containers to run your software reliably and reproducibly at scale. The tutorial is built around realistic genomics use cases and emphasizes performance, reproducibility, and portability. You'll work with real data and see how high-throughput computing (HTC) can accelerate your genomics workflows.
 
@@ -28,6 +31,9 @@ Jump to...
       + [Submitting your basecalling jobs](#submitting-your-basecalling-jobs)
    * [Mapping Sequencing Reads to Genome](#mapping-sequencing-reads-to-genome)
       + [Data Wrangling and Splitting Reads](#data-wrangling-and-splitting-reads-1)
+      + [Running Minimap to Map Reads to the Reference Genome](#running-minimap-to-map-reads-to-the-reference-genome)
+  * [Structural Variant Calling using Sniffles2](#structural-variant-calling-using-sniffles2)
+      + [Submitting our Sniffles2 SV jobs to the OSPool](#submitting-our-sniffles2-sv-jobs-to-the-ospool)
       + [Running Minimap to Map Reads to the Reference Genome](#running-minimap-to-map-reads-to-the-reference-genome)
    * [Next Steps](#next-steps)
       + [Software](#software)
@@ -454,8 +460,9 @@ To get ready for our variant calling step, we need to prepare our freshly mapped
 > [!WARNING]  
 > Index will take a few minutes to complete, **do not proceed until your indexing job is completed**
 
-### Structural Variant Calling using Sniffles2
+## Structural Variant Calling using Sniffles2
 
+### Submitting our Sniffles2 SV jobs to the OSPool
 To get ready for our variant calling step, we need to prepare our freshly mapped BAM files. You should have a directory with several BAM files, these BAM files need to be merged before we can begin. We're going to use our `samtools` container to accomplish this.
    
 1. Create a `sniffles_sv_calling.sh` Shell script using `vim` or `nano`
