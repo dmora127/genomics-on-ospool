@@ -499,7 +499,29 @@ To get ready for our variant calling step, we need to prepare our freshly mapped
 
 ## Next Steps
 
+Now that you've completed the long-read genomics tutorial on the OSPool, you're ready to adapt these workflows for your own data and research questions. Here are some suggestions for what you can do next:
 
+🧬 Apply the Workflow to Your Own Data
+* Replace the tutorial datasets with your own POD5 files and reference genome.
+* Modify the basecalling, mapping, and variant calling submit files to fit your data size, read type (e.g., simplex vs. duplex), and resource needs.
+
+🧰 Customize or Extend the Workflow
+* Incorporate quality control steps (e.g., filtering or read statistics) using FastQC.
+* Use other mappers or variant callers, such as ngmlr, pbsv, or cuteSV.
+* Add downstream tools for annotation, comparison, or visualization (e.g., IGV, bedtools, SURVIVOR).
+
+📦 Create Your Own Containers
+* Extend the Apptainer containers used here with additional tools, reference data, or dependencies.
+* For help with this, see our [Containers Guide](https://portal.osg-htc.org/documentation/htc_workloads/using_software/containers/).
+
+🚀 Run Larger Analyses
+* Submit thousands of basecalling or alignment jobs across the OSPool.
+* Explore data staging best practices using the OSDF for large-scale genomics workflows.
+* Consider using workflow managers (e.g., [DAGman](https://portal.osg-htc.org/documentation/htc_workloads/automated_workflows/dagman-workflows/) or [Pegasus](https://portal.osg-htc.org/documentation/htc_workloads/automated_workflows/tutorial-pegasus/)) with HTCondor.
+
+🧑‍💻 Get Help or Collaborate
+* Reach out to [support@osg-htc.org](mailto:support@osg-htc.org) for one-on-one help with scaling your research.
+* Attend office hours or training sessions—see the [OSPool Help Page](https://portal.osg-htc.org/documentation/support_and_training/support/getting-help-from-RCFs/) for details.
 
 ### Software
 
