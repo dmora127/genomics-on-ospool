@@ -292,6 +292,14 @@ The submit file will instruct the EP to run our executable `basecalling_step2_si
 
 To get ready for our mapping step, we need to prepare our freshly basecalled reads. You should have a directory with several BAM files, these BAM files need to be sorted and 
 
+1. Generate a list of the BAM files Dorado created during basecalling. Save it as `listOfBasecallingBAMs` in your OSDF directory. 
+
+    ```
+   ls /ospool/ap40/data/<user.name>/basecalledBAMs/ > /ospool/ap40/data/<user.name>/listOfBasecallingBAMs
+   ```
+
+### Running Minimap to Map Reads to the Reference Genome
+
 1. Indexing our reference genome - Generating `Celegans_ref.mmi`
 
    1.  Create `minimap2_index.sh` using either `vim` or `nano`
@@ -327,14 +335,39 @@ To get ready for our mapping step, we need to prepare our freshly basecalled rea
 > [!WARNING]  
 > Index will take a few minutes to complete, **do not proceed until your indexing job is completed**
 
-2. Writing our Minimap2 executable script - `minimap2.sh`
+2. Map our basecalled reads to the reference _C. elegans_ indexed genome - `Celegans_ref.mmi`
     
-    ```
-   #!/bin/bash
+   1.  Create `minimap2_mapping.sh` using either `vim` or `nano`
+       ```
+       #!/bin/bash
+       ./minimap2 -ax map-ont Celegans_ref.mmi $1 > mapped_reads_to_genome.sam
+       ```
+   2. Create `minimap2_mapping.sub` using either `vim` or `nano`
+       ```
+        +SingularityImage      = "osdf:///ospool/ap40/data/<user.name>/minimap2.sif"
+    
+        executable		       = ../executables/minimap2_index.sh
+        arguments              = $(BAM_File)
+        transfer_input_files   = osdf:///ospool/ap40/data/<user.name>/Celegans_ref.fa
+    
+        transfer_output_files  = .Celegans_ref.mmi
+        output_destination	   = osdf:///ospool/ap40/data/<user.name>/
+        
+        output                 = ./minimap2/logs/$(Cluster)_$(Process)_mapping_$(BAM_FILE)_step2.out
+        error                  = ./minimap2/logs/$(Cluster)_$(Process)_mapping_$(BAM_FILE)_step2.err
+        log                    = ./minimap2/logs/$(Cluster)_$(Process)_mapping_$(BAM_FILE)_step2.log
+        
+        request_cpus           = 2
+        request_disk           = 5 GB
+        request_memory         = 10 GB 
+        
+        queue BAM_File from /home/<user.name>/genomics_tutorial/listOfBasecallingBAMs
+       ```
+   3. Submit your cluster of minimap2 jobs to the OSPool
    
-   ```
-
-2. 
+      ```
+      condor_submit minimap2_mapping.sub
+      ```
 
 
 ---------
