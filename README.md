@@ -320,12 +320,12 @@ To get ready for our mapping step, we need to prepare our freshly basecalled rea
         
         queue 1
        ```
-    3. Submit your `minimap2_index.sub` job to the OSPool
-        ```
-       condor_submit minimap2_index.sub
+   3. Submit your `minimap2_index.sub` job to the OSPool
        ```
-        > [!WARNING]  
-        > Index will take a few minutes to complete, **do not proceed until your indexing job is completed**
+      condor_submit minimap2_index.sub
+      ```
+> [!WARNING]  
+> Index will take a few minutes to complete, **do not proceed until your indexing job is completed**
 
 2. Writing our Minimap2 executable script - `minimap2.sh`
     
