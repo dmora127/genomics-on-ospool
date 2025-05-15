@@ -1,11 +1,17 @@
 # Long-Read Genomics on the OSPool
 
-This is a start-to-finish tutorial for how to deploy and run R calculations on CHTC's High Throughput Computing (HTC) system.
-The goal of this tutorial is to provide a step-by-step example of how to go from running R calculations on your computer using RStudio,
-to running *many* such calculations on a High Throughput Computing system.
+This tutorial will walk you through a complete long-read sequencing analysis workflow using Oxford Nanopore data on the OSPool, the Open Science Pool high-throughput computing resource. You'll learn how to:
 
-Using data from the [NOAA Global Historical Climatology Network](https://www.ncei.noaa.gov/metadata/geoportal/rest/metadata/item/gov.noaa.ncdc:C00861/html),
-this tutorial generates histograms showing the distribution of daily high and low temperatures across the four meteorological seasons.
+* Basecall raw Nanopore reads using the latest GPU-accelerated Dorado basecaller
+* Map your reads to a reference genome using Minimap2
+* Call structural variants using Sniffles2
+
+All of these steps are distributed across hundreds (or thousands!) of jobs using the HTCondor workload manager and Apptainer containers to run your software reliably and reproducibly at scale. The tutorial is built around realistic genomics use cases and emphasizes performance, reproducibility, and portability. You'll work with real data and see how high-throughput computing (HTC) can accelerate your genomics workflows.
+
+>[!NOTE]
+>If you're brand new to running jobs on the OSPool, we recommend completing the HTCondor ["Hello World"](https://portal.osg-htc.org/documentation/htc_workloads/workload_planning/htcondor_job_submission/) exercise before diving into this tutorial.
+
+**Let’s get started!**
 
 Jump to...
 <!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
@@ -35,13 +41,17 @@ Jump to...
 
 ### Assumptions
 
-This tutorial assumes that you have been using R via the RStudio program installed on your computer.
-To participate in the hands-on portion, you'll need an active CHTC account.
-You can request such an account here: [go.wisc.edu/chtc-account](https://go.wisc.edu/chtc-account).
-To make it easier to copy and paste commands, we recommend that you have this tutorial's GitHub page open in your browser.
+This tutorial assumes that you:
 
-> [!TIP]
-> It is recommended, though not required, that you complete the "Hello World" guide [Practice: Submit HTC Jobs using HTCondor](https://chtc.cs.wisc.edu/uw-research-computing/htcondor-job-submission) before starting this tutorial.
+* Have basic command-line experience (e.g., navigating directories, using bash, editing text files).
+* Have a working OSPool account and can log into an Access Point (e.g., ap40.uw.osg-htc.org).
+* Are familiar with HTCondor job submission, including writing simple .sub files and tracking job status with condor_q.
+* Understand the general workflow of long-read sequencing analysis: basecalling → mapping → variant calling.
+* Have access to a machine with a GPU-enabled execution environment (provided automatically via the OSPool).
+* Have sufficient disk quota and file permissions in your OSPool home and OSDF directories.
+
+>[!TIP]
+>You do not need to be a genomics expert to follow this tutorial. The commands and scripts are designed to be beginner-friendly and self-contained, while still reflecting real-world research workflows.
 
 ### Materials
 
@@ -56,11 +66,7 @@ To obtain a copy of the files used in this tutorial, you can
   or the equivalent for your device
 
 * Download the zip file of the materials: 
-  [download here](https://github.com/CHTC/tutorial-rstudio-to-chtc/archive/refs/heads/main.zip)
-
-We recommend that you create a new R project named "rstudio-to-chtc" and download/copy the files into that directory.
-
-In the RStudio toolbar,
+  [download here](https://github.com/osg-htc/tutorial-long-read-genomics/archive/refs/heads/main.zip)
 
 ## Basecalling Oxford Nanopore long reads using Dorado
 
@@ -486,46 +492,34 @@ To get ready for our variant calling step, we need to prepare our freshly mapped
 
 ## Next Steps
 
-Now that you've finished this tutorial, you are ready to start transitioning your own R project to be run on the HTC system.
-But unless your R project is fairly simple, there are a few more things you'll need to work on to get up and running.
 
-For a full walk-through of how to get started on the HTC system, see our guide [Roadmap to getting started](https://chtc.cs.wisc.edu/uw-research-computing/htc-roadmap).
 
 ### Software
 
-This tutorial used a pre-existing container that came with R 4.4.2 and `tidyverse` packages already installed.
-If that is all you need, then you're in luck!
-Just use the same `container_image` line in your submit file.
-
-If you're like most users, however, then you have additional R packages that you want to use in your scripts. 
-To make those packages available for use in your HTC job, we recommend that you build your own container.
-While that may sound like a daunting task, we have a lot of documentation and examples to help you get started, 
-and the faciliation team is happy to help with any questions or issues.
+In this tutorial, we created several *starter* apptainer containers, including tools like: Dorado, SAMtools, Minimap, and Sniffles2. These containers can serve as a *jumping-off* for you if you need to install additional software for your workflows. 
 
 Our recommendation for most users is to use "Apptainer" containers for deploying their software.
-For instructions on how to build an Apptainer container, see our guide [Use Apptainer Containers](https://chtc.cs.wisc.edu/uw-research-computing/apptainer-htc).
-If you are familiar with Docker, or want to learn how to use Docker, see our guide [Running HTC Jobs Using Docker Containers](https://chtc.cs.wisc.edu/uw-research-computing/docker-jobs.html).
+For instructions on how to build an Apptainer container, see our guide [Using Apptainer/Singularity Containers](https://portal.osg-htc.org/documentation/htc_workloads/using_software/containers-singularity/).
+If you are familiar with Docker, or want to learn how to use Docker, see our guide [Using Docker Containers](https://portal.osg-htc.org/documentation/htc_workloads/using_software/containers-docker/).
 
-For examples of containers that you can use or modify, see the [R section of our Recipes GitHub repository](https://github.com/CHTC/recipes/tree/main/software/R/).
-
-This information can also be found in our guide [Overview: How to Use Software](https://chtc.cs.wisc.edu/uw-research-computing/software-overview-htc).
+This information can also be found in our guide [Using Software on the Open Science Pool](https://portal.osg-htc.org/documentation/htc_workloads/using_software/software-overview/).
 
 ### Data
 
 The ecosystem for moving data to, from, and within the HTC system can be complex, especially if trying to work with large data (> gigabytes).
-For guides on how data movement works on the HTC system, see the ["Manage data" section of our HTC guides page](https://chtc.cs.wisc.edu/uw-research-computing/htc/guides.html#manage-data).
+For guides on how data movement works on the HTC system, see our [Data Staging and Transfer to Jobs](https://portal.osg-htc.org/documentation/htc_workloads/managing_data/overview/) guides.
 
 ### GPUs
 
-If your R project is capable of using GPUs, and you would like to use the GPUs available on the HTC system, see our guide [Use GPUs](https://chtc.cs.wisc.edu/uw-research-computing/gpu-jobs).
+The OSPool has GPU nodes available for common use, like the ones used in this tutorial. If you would like to learn more about our GPU capacity, please visit our [GPU Guide on the OSPool Documentation Portal](https://portal.osg-htc.org/documentation/htc_workloads/specific_resource/gpu-jobs/).
 
 ## Getting Help
 
-CHTC employs a team of Research Computing Facilitators to help researchers use CHTC computing for their research. 
+The OSPool Research Computing Facilitators are here to help researchers using the OSPool for their research. We provide a broad swath of research facilitation services, including:
 
-* **Web guides**: [HTC Computing Guides](https://chtc.cs.wisc.edu/uw-research-computing/htc/guides) - instructions and how-tos for using the HTC system.
-* **Email support**: get help within 1-2 business days by emailing [chtc@cs.wisc.edu](mailto:chtc@cs.wisc.edu).
-* **Virtual office hours**: live discussions with facilitators - see the "Get Help" page for current schedule.
-* **One-on-one meetings**: dedicated meetings to help new users, groups get started on the system; email [chtc@cs.wisc.edu](mailto:chtc@cs.wisc.edu) to request a meeting.
+* **Web guides**: [OSPool Guides](https://portal.osg-htc.org/documentation/) - instructions and how-tos for using the OSPool and OSDF.
+* **Email support**: get help within 1-2 business days by emailing [support@osg-htc.org](mailto:support@osg-htc.org).
+* **Virtual office hours**: live discussions with facilitators - see the [Email, Office Hours, and 1-1 Meetings](https://portal.osg-htc.org/documentation/support_and_training/support/getting-help-from-RCFs/) page for current schedule.
+* **One-on-one meetings**: dedicated meetings to help new users, groups get started on the system; email [support@osg-htc.org](mailto:support@osg-htc.org) to request a meeting.
 
-This information, and more, is provided in our [Get Help](https://chtc.cs.wisc.edu/uw-research-computing/get-help.html) page.
+This information, and more, is provided in our [Get Help](https://portal.osg-htc.org/documentation/support_and_training/support/getting-help-from-RCFs/) page.
