@@ -77,8 +77,7 @@ To obtain a copy of the files used in this tutorial, you can
 ## Basecalling Oxford Nanopore long reads using Dorado
 
 ### Setting up our software environment
-Before we can begin basecalling our reads, we need to setup our software environment to run Dorado. We are going to setup
-our environment using an Apptainer container. 
+Before we can begin basecalling our reads, we need to setup our software environment to run Dorado. We are going to setup our environment using an Apptainer container. 
 
 1. First, let's login to our OSPool Account
 
