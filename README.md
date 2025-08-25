@@ -33,8 +33,8 @@ Jump to...
       + [Data Wrangling and Splitting Reads](#data-wrangling-and-splitting-reads-1)
       + [Running Minimap to Map Reads to the Reference Genome](#running-minimap-to-map-reads-to-the-reference-genome)
   * [Structural Variant Calling using Sniffles2](#structural-variant-calling-using-sniffles2)
+      + [Data Wrangling and Splitting Reads](#Data-Wrangling-and-Splitting-Reads-2)
       + [Submitting our Sniffles2 SV jobs to the OSPool](#submitting-our-sniffles2-sv-jobs-to-the-ospool)
-      + [Running Minimap to Map Reads to the Reference Genome](#running-minimap-to-map-reads-to-the-reference-genome)
    * [Next Steps](#next-steps)
       + [Software](#software)
       + [Data](#data)
@@ -123,6 +123,10 @@ text to a new file titled `dorado.def`. You can open up a text editor, such as `
         
         # install POD5 using pip
         pip install pod5 --break-system-packages
+   
+        # install samtools for bam to fastq conversion
+        apt-get update -y
+        apt-get install -y samtools
     
     %environment
     
@@ -257,19 +261,27 @@ When basecalling our sequencing data using simplex basecalling mode on Dorado we
     
     args="$1"
     eval "dorado $args"
+   
+    echo "completed dorado basecalling"
+   
+    # convert BAM to FASTQ using bedtools
+    BAM_FILE=$(ls *.bam)
+    bedtools bamtofastq -i "$BAM_FILE" -fq "${BAM_FILE%.bam}.fastq"
+    
+    echo "completed bam to fastq conversion"
    ```
 
 2. Create your submit file for Dorado simplex basecalling - `/home/<user.name>/genomics_tutorial/submit_files/basecalling_step2_simplex_reads.sub`
 
     ```
-    +SingularityImage      = "osdf:///ospool/ap40/data/<user.name>/dorado.sif"
+    container_image        = "osdf:///ospool/ap40/data/<user.name>/dorado.sif"
 
     executable		       = ../executables/basecalling_step2_simplex_reads.sh
     arguments		       = "'basecaller --batchsize 16 hac@v5.0.0 --models-directory ./models/ $(POD5_input_file) > $(POD5_input_file).bam'"
     
     transfer_input_files   = osdf:///ospool/ap40/data/<user.name>/split_by_channels/$(POD5_input_file), osdf:///ospool/ap40/data/<user.name>/models.tar.gz
 
-    transfer_output_files  = ./$(POD5_input_file).bam
+    transfer_output_files  = ./$(POD5_input_file).bam, ./$(POD5_input_file).fastq
     output_destination	   = osdf:///ospool/ap40/data/<user.name>/basecalledBAMs/
     
     output                 = ./basecalling_step2/logs/$(POD5_input_file)_$(Process)_basecalling_step2.out
@@ -284,7 +296,7 @@ When basecalling our sequencing data using simplex basecalling mode on Dorado we
     queue POD5_input_file from /home/<user.name>/genomics_tutorial/pod5_files
    ```
 
-This submit file will read the contents of `/home/<user.name>/genomics_tutorial/pod5_files`, iterate through each line, and assign the value of each line to the variable `$POD5_input_file`. This allows to us programmatically submit _N_ jobs, where _N_ is equal to the number of POD5 subset file we created previously. Each job will have its corresponding POD5 input subset (`subset_id-105.pod5`) and `models.tar.gz` files transferred to the Execution Point (EP). Additionally, we will transfer and start our `dorado.sif` apptainer container image using the `+SingularityImage` attribute on our submit file. 
+This submit file will read the contents of `/home/<user.name>/genomics_tutorial/pod5_files`, iterate through each line, and assign the value of each line to the variable `$POD5_input_file`. This allows to us programmatically submit _N_ jobs, where _N_ is equal to the number of POD5 subset file we created previously. Each job will have its corresponding POD5 input subset (`subset_id-105.pod5`) and `models.tar.gz` files transferred to the Execution Point (EP). Additionally, we will transfer and start our `dorado.sif` apptainer container image using the `container_image` attribute on our submit file. 
 
 The submit file will instruct the EP to run our executable `basecalling_step2_simplex_reads.sh` and pass the arguments found in the `arguments` attribute. The `arguments` attribute allows us to customize the parameters passed to _Dorado_ directly on our submit file, without having to edit our executable. 
 
@@ -336,7 +348,7 @@ To get ready for our mapping step, we need to prepare our freshly basecalled rea
        ```
    2. Create `minimap2_index.sub` using either `vim` or `nano`
         ```
-        +SingularityImage      = "osdf:///ospool/ap40/data/<user.name>/genomics_tutorial/minimap2.sif"
+        container_image        = "osdf:///ospool/ap40/data/<user.name>/genomics_tutorial/minimap2.sif"
     
         executable		       = ../executables/minimap2_index.sh
         
@@ -375,7 +387,7 @@ To get ready for our mapping step, we need to prepare our freshly basecalled rea
        ```
    2. Create `minimap2_mapping.sub` using either `vim` or `nano`
        ```
-        +SingularityImage      = "osdf:///ospool/ap40/data/<user.name>/minimap2.sif"
+        container_image        = "osdf:///ospool/ap40/data/<user.name>/minimap2.sif"
     
         executable		       = ../executables/minimap2_index.sh
         arguments              = $(BAM_File)
@@ -405,7 +417,7 @@ To get ready for our mapping step, we need to prepare our freshly basecalled rea
       condor_submit minimap2_mapping.sub
       ```
 
-## Calling Structural Variants using Sniffles2
+## Structural Variant Calling using Sniffles2
 
 ### Data Wrangling and Splitting Reads
 
@@ -439,7 +451,7 @@ To get ready for our variant calling step, we need to prepare our freshly mapped
 3. Create a `bamMerge.sub` HTCondor submission script using `vim` or `nano`
 
     ```
-    +SingularityImage      = "osdf:///ospool/ap40/data/<user.name>/minimap2.sif"
+    container_image        = "osdf:///ospool/ap40/data/<user.name>/minimap2.sif"
         
     executable		       = ../executables/bamMerge.sh
     
@@ -461,12 +473,19 @@ To get ready for our variant calling step, we need to prepare our freshly mapped
 > [!WARNING]  
 > Index will take a few minutes to complete, **do not proceed until your indexing job is completed**
 
-## Structural Variant Calling using Sniffles2
-
 ### Submitting our Sniffles2 SV jobs to the OSPool
 To get ready for our variant calling step, we need to prepare our freshly mapped BAM files. You should have a directory with several BAM files, these BAM files need to be merged before we can begin. We're going to use our `samtools` container to accomplish this.
    
-1. Create a `sniffles_sv_calling.sh` Shell script using `vim` or `nano`
+1. Create a `sniffles2.def` singularity definition file using `vim` or `nano` and build your `sniffles2.sif` apptainer container on the Access Point (AP)
+    
+    ```
+    Bootstrap: docker
+    From: continuumio/miniconda3:latest
+    
+    %post
+        conda install sniffles
+   ```
+2. Create a `sniffles_sv_calling.sh` Shell script using `vim` or `nano`
     
     ```
    #!/bin/bash
@@ -476,10 +495,10 @@ To get ready for our variant calling step, we need to prepare our freshly mapped
    tar -czf ../MappedBAMs.tar.gz .
    ```
 
-2. Create a `bamMerge.sub` HTCondor submission script using `vim` or `nano`
+3. Create a `bamMerge.sub` HTCondor submission script using `vim` or `nano`
 
     ```
-    +SingularityImage      = "osdf:///ospool/ap40/data/<user.name>/minimap2.sif"
+    container_image        = "osdf:///ospool/ap40/data/<user.name>/minimap2.sif"
         
     executable		       = ../executables/sniffles_sv_calling.sh
     
