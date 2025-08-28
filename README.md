@@ -150,12 +150,6 @@ text to a new file titled `dorado.def`. You can open up a text editor, such as `
    mv dorado.sif /ospool/ap40/data/<user.name>/
    ```
    
-6. We need to repeat steps 3-5 for samtools. Since samtools has an existing container on Dockerhub, we can use it as the base image to build our container. 
-   
-    ```
-   apptainer build /ospool/ap40/data/<user.name>/samtools.sif docker://biocontainers/samtools:v1.9-4-deb_cv1
-   ```
-
 ### Data Wrangling and Splitting Reads
 
 Oxford Nanopore sequencing runs general yield POD5 files. Each POD5 file is generated about once an hour throughout the
@@ -164,63 +158,29 @@ This would mean that POD5 files that are generated from earlier in the sequencin
 files later in the run. Additionally, this division of data does not allow for _Duplex_ read basecalling. As a result prior
 to running Dorado, we must first reorganize the data contained within all the POD5 files. 
 
----
-
-#### For _Simplex_ basecalling
-When basecalling our sequencing data using simplex basecalling mode on Dorado we can subdivide our POD5 files into smaller individual subsets. This subdivision of our files enables us to take advantage of the OSPool's High Throughput Computing (HTC) principles, significantly decreasing the time-to-results for our basecalling. We will use the `POD5` package installed in our `dorado.sif` container—if you need to generate the `dorado.sif` apptainer image, refer to [Setting up our software environment](#Setting-up-our-software-environment). 
-
-1. Create a csv that maps reads in your `pod5_dir` to subset files.
-    ```
-    pod5 view <path_to_pod5_dir> --include "read_id" | awk 'NR==1 {print "read_id subset_id"; next} {print $0, int((NR-1)/1000)}' > read_subsets.csv
-   ```
-   _This will generate a CSV table mapping each read_id to a subset_file for basecalling._
-
-
-2. Using the `read_subsets.csv` mapping file, subset your POD5 reads to the output directory `split_pod5_subsets`
-    ```
-   pod5 subset <path_to_pod5_dir> --summary read_subsets.csv --columns subset_id --output split_pod5_subsets
-   ```
-   
-3. Create a list of POD5 files to iterate through while basecalling
-
-    ```
-   ls split_pod5_subsets > /home/<user.name>/genomics_tutorial/pod5_files
-   ```
-   
-    If you `head` this new file you should see an output similar to this:
-
-    ```
-    [user.name@ap40 user.name]$ head /home/<user.name>/genomics_tutorial/pod5_files
-    subset_id-0.pod5
-    subset_id-100.pod5
-    subset_id-101.pod5
-    subset_id-102.pod5
-    subset_id-103.pod5
-    subset_id-104.pod5
-    subset_id-105.pod5
-    subset_id-106.pod5
-    subset_id-107.pod5
-    subset_id-108.pod5
-    [user.name@ap40 user.name]$ 
-   ```
-
 ----
 
-#### For _Duplex_ basecalling
+#### Splitting your reads for basecalling
 When basecalling our sequencing data using simplex basecalling mode on Dorado we can subdivide our POD5 files into smaller individual subsets. This subdivision of our files enables us to take advantage of the OSPool's High Throughput Computing (HTC) principles, significantly decreasing the time-to-results for our basecalling. We will use the `POD5` package installed in our `dorado.sif` container—if you need to generate the `dorado.sif` apptainer image, refer to [Setting up our software environment](#Setting-up-our-software-environment). 
 
-1. Create a csv that maps reads in your `pod5_dir` to subset files.
+1. Launch an interactive apptainer shell session on the Access Point (AP) using your `dorado.sif` container. This will allow us to run POD5 commands to inspect our data.
+    ```
+    apptainer shell -B ${PWD}:${PWD} dorado.sif
+   ```
+   _This will generate a TSV table mapping each read_id to each channel for basecalling._
+
+2. Create a csv that maps reads in your `pod5_dir` to subset files.
     ```
     pod5 view <path_to_pod5_dir> --include "read_id, channel" --output summary.tsv
    ```
    _This will generate a TSV table mapping each read_id to each channel for basecalling._
 
-2. Using the `read_subsets.csv` mapping file, subset your POD5 reads to the output directory `split_pod5_subsets`
+3. Using the `read_subsets.csv` mapping file, subset your POD5 reads to the output directory `split_pod5_subsets`
     ```
    pod5 subset <path_to_pod5_dir> --summary summary.tsv --columns channel --output split_pod5_subsets
    ```
    
-3. Create a list of POD5 files to iterate through while basecalling
+4. Create a list of POD5 files to iterate through while basecalling
 
     ```
    ls split_pod5_subsets > /home/<user.name>/genomics_tutorial/pod5_files
@@ -265,8 +225,7 @@ When basecalling our sequencing data using simplex basecalling mode on Dorado we
     echo "completed dorado basecalling"
    
     # convert BAM to FASTQ using bedtools
-    BAM_FILE=$(ls *.bam)
-    bedtools bamtofastq -i "$BAM_FILE" -fq "${BAM_FILE%.bam}.fastq"
+    samtools fastq ${BAM_FILE} > ${BAM_FILE}.fastq
     
     echo "completed bam to fastq conversion"
    ```
@@ -278,6 +237,8 @@ When basecalling our sequencing data using simplex basecalling mode on Dorado we
 
     executable		       = ../executables/basecalling_step2_simplex_reads.sh
     arguments		       = "'basecaller --batchsize 16 hac@v5.0.0 --models-directory ./models/ $(POD5_input_file) > $(POD5_input_file).bam'"
+   
+    environment = "BAM_FILE=$(POD5_input_file).bam"
     
     transfer_input_files   = osdf:///ospool/ap40/data/<user.name>/split_by_channels/$(POD5_input_file), osdf:///ospool/ap40/data/<user.name>/models.tar.gz
 
