@@ -71,8 +71,13 @@ To obtain a copy of the files used in this tutorial, you can
 
   or the equivalent for your device
 
-* Download the zip file of the materials: 
-  [download here](https://github.com/osg-htc/tutorial-long-read-genomics/archive/refs/heads/main.zip)
+* Download the toy dataset using the Pelican platform: 
+  
+    ```
+    pelican object get pelican://osg-htc.org/ospool/uc-shared/public/osg-training/tutorial-ospool-genomics/data/path/to/pod5/files ./
+    ```
+
+<!--TODO: Generate simulated pod5 files from strain and upload to uc-shared directory-->
 
 ## Basecalling Oxford Nanopore long reads using Dorado
 
@@ -153,8 +158,8 @@ text to a new file titled `dorado.def`. You can open up a text editor, such as `
 ### Data Wrangling and Splitting Reads
 
 Oxford Nanopore sequencing runs general yield POD5 files. Each POD5 file is generated about once an hour throughout the
-duration of the sequencing run. This output format does not scale very well, as data output usually plateus after 24-48hrs.
-This would mean that POD5 files that are generated from earlier in the sequencing run, will be larger in size compared to
+duration of the sequencing run. This output format does not scale very well, as data output usually plateaus after 24-48hrs.
+This would mean that POD5 files that are generated from earlier in the sequencing run, will be larger in file size compared to
 files later in the run. Additionally, this division of data does not allow for _Duplex_ read basecalling. As a result prior
 to running Dorado, we must first reorganize the data contained within all the POD5 files. 
 
